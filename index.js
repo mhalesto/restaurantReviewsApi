@@ -39,7 +39,8 @@ app.post("/api/v1/login", (req, res) => {
     [username, password],
     (error, results) => {
       if (error) {
-        throw error;
+        // throw error;
+        console.log(error);
       }
       res.send(results.rows);
     }
@@ -58,7 +59,8 @@ app.get("/api/v1/restaurants", (req, res) => {
     [],
     (error, results) => {
       if (error) {
-        throw error;
+        // throw error;
+        console.log(error);
       }
 
       res.status(200).json(results.rows);
@@ -86,36 +88,17 @@ app.post("/api/v1/addRestaurant", (req, res) => {
 
 
 
+// Reviews Start ----------------------
+app.get("/api/v1/getResReviews/:res_id", (req, res) => {
+  const { res_id } = req.params;
 
-
-
-
-
-
-
-// Create restaurant
-app.post("/api/v1/createRestaurant", (req, res) => {
-  const { studentid, stdname, registered, region, staffno } = req.body;
   pool.query(
-    "INSERT INTO studentstbl (studentid, stdname, registered, region, staffno) VALUES ($1, $2, $3, $4, $5)",
-    [studentid, stdname, registered, region, staffno],
+    "SELECT * FROM reviews WHERE res_id = $1",
+    [res_id],
     (error, results) => {
       if (error) {
-        throw error;
-      }
-      res.sendStatus(201);
-    }
-  );
-});
-
-// Get all students
-app.get("/api/v1/students", (req, res) => {
-  pool.query(
-    "SELECT * FROM student",
-    [],
-    (error, results) => {
-      if (error) {
-        throw error;
+        // throw error;
+        console.log(error)
       }
 
       res.status(200).json(results.rows);
@@ -123,146 +106,20 @@ app.get("/api/v1/students", (req, res) => {
   );
 });
 
-// Get all staff
-app.get("/api/v1/staff", (req, res) => {
+// Add Review
+app.post("/api/v1/addReview", (req, res) => {
+  const { meal_eaten, liked, disliked, stars, res_id,  user_id} = req.body;
   pool.query(
-    "SELECT * FROM stafftbl",
-    [],
+    "INSERT INTO reviews (meal_eaten, liked, disliked, stars, res_id,  user_id) VALUES ($1, $2, $3, $4, $5, $6)",
+    [meal_eaten, liked, disliked, stars, res_id,  user_id],
     (error, results) => {
       if (error) {
-        throw error;
+        console.log(error.message)
       }
-      res.status(200).json(results.rows);
+      res.send(results);
     }
   );
 });
 
-// Get all courses
-app.get("/api/v1/courses", (req, res) => {
-  pool.query(
-    "SELECT * FROM course",
-    [],
-    (error, results) => {
-      if (error) {
-        throw error;
-      }
-      res.status(200).json(results.rows);
-    }
-  );
-});
+// Reviews End ------------------------
 
-// Delete a student
-app.delete("/api/v1/deleteStudent/:studentid", (req, res) => {
-  const { studentid } = req.params;
-
-  pool.query("DELETE FROM studentstbl WHERE studentid = $1", [studentid], (error, results) => {
-    if (error) {
-      throw error;
-    }
-    res.sendStatus(200);
-  });
-});
-
-// Update student 
-app.put("/api/v1/updateStudent/:studentid", (req, res) => {
-  const { studentid } = req.params;
-  const { stdname, registered, region, staffno } = req.body;
-
-  pool.query(
-    "UPDATE studentstbl SET stdname = $1, registered = $2, region = $3, staffno = $4 WHERE studentid = $5",
-    [stdname, registered, region, staffno, studentid],
-    (error, results) => {
-      if (error) {
-        throw error;
-      }
-
-      res.sendStatus(200);
-    }
-  );
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-app.get("/api/v1/issues/:id", (req, res) => {
-  const { id } = req.params;
-
-  pool.query(
-    "SELECT id, label, status, priority FROM issues WHERE id = $1",
-    [id],
-    (error, results) => {
-      if (error) {
-        throw error;
-      }
-
-      res.status(200).json(results.rows);
-    }
-  );
-});
-
-app.put("/api/v1/issues/:id", (req, res) => {
-  const { id } = req.params;
-  const { label, status, priority } = req.body;
-
-  pool.query(
-    "UPDATE issues SET label = $1, status = $2, priority = $3 WHERE id = $4",
-    [label, status, priority, id],
-    (error, results) => {
-      if (error) {
-        throw error;
-      }
-
-      res.sendStatus(200);
-    }
-  );
-});
-
-app.delete("/api/v1/issues/:id", (req, res) => {
-  const { id } = req.params;
-
-  pool.query("DELETE FROM issues WHERE id = $1", [id], (error, results) => {
-    if (error) {
-      throw error;
-    }
-
-    res.sendStatus(200);
-  });
-});
-
-const PORT = process.env.PORT || 4000;
-
-app.listen(PORT, () => {
-  console.log(`app started on port ${PORT}`)
-});
