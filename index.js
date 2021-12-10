@@ -123,3 +123,8 @@ app.post("/api/v1/addReview", (req, res) => {
 
 // Reviews End ------------------------
 
+const PORT = process.env.PORT || 4000;
+
+app.listen(PORT, () => {
+  console.log(`App started on port ${PORT}`);
+})
